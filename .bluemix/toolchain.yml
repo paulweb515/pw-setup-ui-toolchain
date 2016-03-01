@@ -57,4 +57,4 @@ github:
   service-category: github
   parameters:
     catalog-api-repo_name: "otc-setup-ui-{{name}}"
-    catalog-api-repo_url: https://github.com/paulweb515/pw-setup-ui-toolchain.git
+    catalog-api-repo_url: https://github.ibm.com/org-ids/otc-setup-ui.git
