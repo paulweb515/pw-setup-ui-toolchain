@@ -12,7 +12,6 @@ otc-setup-ui-repo:
   parameters:
     repo_url: "https://github.ibm.com/org-ids/otc-setup-ui.git"
     type: fork
-    has_issues: false
 
 
 otc-setup-ui-build:
