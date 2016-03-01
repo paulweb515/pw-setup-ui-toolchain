@@ -3,35 +3,58 @@ name: "Cloud-native toolchain for otc-setup-ui"
 description: "Fork and setup otc-setup-ui in stage1"
 version: 0.2
 required:
- - otc-setup-ui-repo
- - otc-setup-ui-build
+ - deploy
+ - github
 
 # Github repos
-otc-setup-ui-repo:
+catalog-api-repo:
   service_id: github
   parameters:
-    repo_url: "https://github.ibm.com/org-ids/otc-setup-ui.git"
-    type: fork
+    repo_name: "{{github.parameters.catalog-api-repo_name}}"
+    repo_url: "{{github.parameters.catalog-api-repo_url}}"
+    type: clone
+    has_issues: true
+  hidden: [form, description]    
 
-
-otc-setup-ui-build:
+# Pipelines
+catalog-api-build:
   service_id: pipeline
   parameters:
-    name: "otc-setup-ui-{{name}}"
-    metadata: ui.pipeline.yml
+    name: "catalog-api-{{name}}"
+    metadata: catalog-api.pipeline.yml
     env:
-      GIT_REPO_URL: "{{otc-setup-ui-repo.parameters.repo_url}}"
-      CF_APP_NAME: "otc-setup-ui-{{name}}"
-      SPACE_NAME: "dev"
-      ORG_NAME: "Paul_Webster@ca.ibm.com"
-      REGION_ID: "ibm:ys1:us-south"
+      GIT_REPO_URL: ${catalog-api-repo.parameters.repo-url}
+      SAUCE_USER: "{{test.parameters.username}}"
+      API_KEY: "{{test.parameters.key}}"
+      CF_APP_NAME: "{{deploy.parameters.catalog-app-name}}"
+      DEV_SPACE_NAME: "{{deploy.parameters.dev-space}}"
+      DEV_ORG_NAME: "{{deploy.parameters.dev-organization}}"
+      DEV_REGION_ID: "{{deploy.parameters.dev-region}}"
+  hidden: [form, description]      
 
+  
+#Web IDE
+webide:
+  service_id: orion
+
+#Active Deploy
+greenblue:
+  service_id: activedeploy
+  
 #Deployment
-#deploy:
-#  schema: deploy.json
-#  service-category: pipeline
-#  parameters:
-#    region: "ibm:yp:us-south"
-#    organization: "{{organization}}"
-#    space: dev
-#    app-name: "{{otc-setup-ui-repo.parameters.repo_name}}"
+deploy:
+  schema: deploy.json
+  service-category: pipeline
+  parameters:
+    dev-region: "ibm:yp:us-south"
+    dev-organization: "{{organization}}"
+    dev-space: dev
+    catalog-app-name: "{{catalog-api-repo.parameters.repo_name}}"
+
+#Github
+github:
+  schema: github.json
+  service-category: github
+  parameters:
+    catalog-api-repo_name: "otc-setup-ui-{{name}}"
+    catalog-api-repo_url: https://github.com/paulweb515/pw-setup-ui-toolchain.git
