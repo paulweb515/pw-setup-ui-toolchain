@@ -1,0 +1,39 @@
+---
+name: "Cloud-native toolchain for otc-setup-ui"
+description: "Fork and setup otc-setup-ui in stage1"
+version: 0.2
+required:
+ - otc-setup-ui-repo
+ - otc-setup-ui-build
+
+# Github repos
+otc-setup-ui-repo:
+  service_id: github
+  parameters:
+    repo_name: "otc-setup-ui-{{name}}"
+    repo_url: "https://github.ibm.com/org-ids/otc-setup-ui.git"
+    type: fork
+    has_issues: false
+
+
+otc-setup-ui-build:
+  service_id: pipeline
+  parameters:
+    name: "otc-setup-ui-{{name}}"
+    metadata: ui.pipeline.yml
+    env:
+      GIT_REPO_URL: "{{otc-setup-ui-repo.parameters.repo_url}}"
+      CF_APP_NAME: "otc-setup-ui-{{name}}"
+      SPACE_NAME: "{{space}}"
+      ORG_NAME: "{{organization}}"
+      REGION_ID: "{{region}}"
+
+#Deployment
+#deploy:
+#  schema: deploy.json
+#  service-category: pipeline
+#  parameters:
+#    region: "ibm:yp:us-south"
+#    organization: "{{organization}}"
+#    space: dev
+#    app-name: "{{otc-setup-ui-repo.parameters.repo_name}}"
